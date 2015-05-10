@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="1">
+ <tileset firstgid="1" name="castle" tilewidth="32" tileheight="32">
+  <image source="resources/castle.png" trans="ff00ff" width="2239" height="2235"/>
+ </tileset>
+ <layer name="Patrones_1" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt2stO1FAcx/F2yBQvjD7AoAsvTBiMib6GeHclJuBKRdfyBO69X1bwAIK41o1b947gLcEIG/EVjL9mekJbe5heyKTJ+X6Sb6ZTezD0UPln4qjnefvUfnVAHVRjqqUOqcMqUKNcN5TrptV5dUFdVJfUZXVFXVXX1DmuG9p1j9Rj9UQ9Vc/Uc/VCvVSv1EOuG9p1PfVZral19UV9Vd/Ud/VDfUpdFx5vqz/ROXPcs7wf9PXy/r0uXHfM97zj6oQ6qSZUx7efb0edUWfVeOy4bXk/GRRbY87Fj13Ra2rf1JpaV/f8frfUbXVHzau7all/vqJONzxvQe/nou779veTrf5rkTVhN2PH4ddwRVs/u+PqiDoa7OyF2Yes/VhI3bs5P/ucuZfdVvE1Zp1rlvX9r6g3alW9Va/9/89/CJL37q9+3t/p9b1vf+3E7mvRNa7ux6Kf3abaio6X1KlG8jm5Hv6brnN+w/76O/Z8FF3j6n7MqBvRqzkO70lX92Yquj/blv0wzexSej/yrnF2P/T9b3iD22om9+NXs7/W3NuljH56yf0ossbV/Xgw0p8nJwY0FST3w8yw8dIzaif1fBRZ4+p+fBzZmS9Ns5bKzLtVZ2TXhM9HONPmqcy8W3VGdk04P61GDZp7y8y7VWdk19jm3ay5t8y8W3VGdk161t1t7i0z71adkV2zUaAy827VGRl2ZebdqjMy7Jh364V5t16Yd+uFebdemHfrhXm3Xph368V8zhv/PNz83s36PwhhZdZ0+X2eS97Pgfcy2FW9tzwfe4vnAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADc8Q9KBij/
+  </data>
+ </layer>
+</map>
