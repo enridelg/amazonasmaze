@@ -1,3 +1,13 @@
+/**
+*
+* @name AmazonasMaze
+* @author Jesus Vazquez Pigueiras
+* @author Diego Díaz Bailón
+* @author Enrique Delgado Solana
+* Practica 5
+*
+**/
+
 //v2
 
 var game = function () {
@@ -8,11 +18,12 @@ var game = function () {
 		.controls().touch();
 
 
-	/**********************************************/
-	/*					Background                */
-	/**********************************************/
+	/*==============================
+	=          Background          =
+	==============================*/
 
 /*
+
 	Q.Sprite.extend("Background",{
 		init: function(p) {
 			this._super(p,{
@@ -25,12 +36,17 @@ var game = function () {
 			});
 		}
 	});
+
 */
 
-	/**********************************************/
-	/*				        	Stages                    */
-	/**********************************************/
+	/*-----  End of Background   ----*/
+
+	/*==============================
+	=            Stages            =
+	==============================*/
+
 /*
+
 	Q.scene('hud',function(stage) {
 	  var container = stage.insert(new Q.UI.Container({
 	    x: 50, y: 0
@@ -48,7 +64,11 @@ var game = function () {
 	  	Q.stageScene('hud', 1);
 	  })
 	});
+
 */
+
+	/*-----   End of Stages   -----*/
+
 //initial scene
 	Q.scene('initGame',function(stage) {
 
