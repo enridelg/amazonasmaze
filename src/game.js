@@ -17,46 +17,117 @@ var game = function () {
 	/*==============================
 	=          		Boat		         =
 	==============================*/
-	/*
+
 	Q.animations('boat', {
-		run_right: 		{ frames: [1, 2, 3], rate: 1/10 },
-		run_left: 		{ frames: [15, 16, 17], rate: 1/10 },
+		/*
+		move_right: 		{ frames: [1, 2, 3], rate: 1/10 },
+		move_left: 		{ frames: [15, 16, 17], rate: 1/10 },
+		move_top: 		{ frames: [15, 16, 17], rate: 1/10 },
+		move_bottom: 		{ frames: [15, 16, 17], rate: 1/10 },
 		stand_right: 	{ frames: [0] },
-		stand_left: 	{ frames: [14] },
-		jump_right: 	{ frames: [4] },
-		jump_left: 		{ frames: [18] },
-		dead: 			{ frames: [12] }
-	});*/
+		stand_left: 	{ frames: [0] },
+		stand_top: 	{ frames: [0] },
+		stand_bottom: 	{ frames: [0] }*/ //TODO
+	});
 
 	Q.Sprite.extend("Boat", {
 	init: function(p) {
 		this._super(p, {
-				//sheet: "boat",
-				//sprite: "boat",
+			sheet: "boatR",
+			sprite: "boat",
+			moving: false,
+			speed: 300,
+			vx: 0,
+			vy: 0
 				//frame: 0,
-				asset: "boat-small.png"
 				//jumpSpeed: -400,
 				//speed: 300
 
 			});
 
 			this.add('animation, tween');
+	},
+
+	step: function(dt) {
+		if(!this.p.moving){
+			if(Q.inputs['up'] && map_data[this.p.actualNode].north != null){
+				//nos movemos y hacemos animacion
+				Q.inputs['up'] = false;
+				this.p.moving = true;
+				this.p.vy = -this.p.speed;
+				this.p.actualNode = map_data[this.p.actualNode].north;
+			}else if(Q.inputs['down'] && map_data[this.p.actualNode].south != null){
+				//nos movemos y hacemos animacion
+				Q.inputs['down'] = false;
+				this.p.moving = true;
+				this.p.vy = this.p.speed;
+				this.p.actualNode = map_data[this.p.actualNode].south;
+			}else if(Q.inputs['left'] && map_data[this.p.actualNode].west != null){
+				//nos movemos y hacemos animacion
+				Q.inputs['left'] = false;
+				this.p.moving = true;
+				this.p.vx = -this.p.speed;
+				this.p.actualNode = map_data[this.p.actualNode].west;
+			}else if(Q.inputs['right'] && map_data[this.p.actualNode].east != null){
+				//nos movemos y hacemos animacion
+				Q.inputs['right'] = false;
+				this.p.moving = true;
+				this.p.vx = this.p.speed;
+				this.p.actualNode = map_data[this.p.actualNode].east;
+			}
+		}else{
+			if(this.p.vx > 0 || this.p.vy > 0){
+				if(this.p.x + dt * this.p.vx > map_data[this.p.actualNode].x ||
+					this.p.y + dt * this.p.vy > map_data[this.p.actualNode].y){
+						this.p.x = map_data[this.p.actualNode].x;
+						this.p.y = map_data[this.p.actualNode].y;
+						this.p.vx = 0;
+						this.p.vy = 0;
+						this.p.moving = false;
+					}else{
+						this.p.x = this.p.x + dt * this.p.vx;
+						this.p.y = this.p.y + dt * this.p.vy;
+					}
+			}else {
+				if(this.p.x + dt * this.p.vx < map_data[this.p.actualNode].x ||
+					this.p.y + dt * this.p.vy < map_data[this.p.actualNode].y){
+						this.p.x = map_data[this.p.actualNode].x;
+						this.p.y = map_data[this.p.actualNode].y;
+						this.p.vx = 0;
+						this.p.vy = 0;
+						this.p.moving = false;
+					}else{
+						this.p.x = this.p.x + dt * this.p.vx;
+						this.p.y = this.p.y + dt * this.p.vy;
+					}
+			}
+
+		}
 	}
 });
 
+	/*==============================
+	=          		Node		         =
+	==============================*/
+
+	Q.Sprite.extend("Node", {
+	init: function(p) {
+		this._super(p, {asset:""});
+
+			this.add('animation, tween');
+	}
+});
 
 	/*==============================
 	=          Background          =
 	==============================*/
-
-/*
 
 	Q.Sprite.extend("Background",{
 		init: function(p) {
 			this._super(p,{
 				x: Q.width/2,
 				y: Q.height/2,
-				asset: 'mainTitle.png'
+				asset: 'intro_f.png'
 			});
 			this.on("touch",function() {
 				Q.stageScene("level1");
@@ -64,12 +135,10 @@ var game = function () {
 		}
 	});
 
-*/
-
 	/*-----  End of Background   ----*/
 
 	/*==============================
-	=            Stages            =
+	=            Scenes            =
 	==============================*/
 
 /*
@@ -94,15 +163,13 @@ var game = function () {
 
 */
 
-	/*-----   End of Stages   -----*/
-
 //initial scene
 	Q.scene('initGame',function(stage) {
 
 		//Q.clearStage(1);
 		var bg = new Q.Background({ type: Q.SPRITE_UI });
 		stage.insert(bg);
-		Q.audio.stop(); //Stop all the music
+		//Q.audio.stop(); //Stop all the music
 
 		Q.input.on("confirm",function() {
 			//si estamos en la escena inicial cargamos el nivel 1
@@ -117,10 +184,12 @@ var game = function () {
 //level1
 	Q.scene("level1",function(stage) {
 		Q.stageTMX("level1.tmx",stage);
-		console.log("prueba");
 		//crate elements
 
-	 	boat = stage.insert(new Q.Boat({x:20, y:20}));
+		boat = createElements(stage);
+
+		stage.add("viewport").follow(boat);
+	 	//var boat = stage.insert(new Q.Boat({x:20, y:20}));
 
 	 	//Q.state.reset({ coins: 0 });
 
@@ -158,13 +227,13 @@ var game = function () {
 		container.fit(20);
 	});
 
+	/*-----   End of Scenes   -----*/
 
-
-	Q.load(["boat-small.png",
+	Q.load(["boat.png", "boat_enemy.png", "boat.json",
+						"intro_f.png",
 						"bg.png", "tiles.png"], function() {
-		//Q.compileSheets("mario_small.png","mario_small.json");
-		console.log("no carga nada");
-		Q.stageScene("level1");
+		Q.compileSheets("boat.png","boat.json");
+		Q.stageScene("initGame");
 	});
 
 	Q.loadTMX("level1.tmx, tiles.png", function() {
