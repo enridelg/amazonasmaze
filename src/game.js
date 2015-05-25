@@ -132,14 +132,36 @@ var game = function () {
 });
 
 	/*==============================
-	=          		Node		         =
+	=          		Nodes	         =
 	==============================*/
 
-	Q.animations('nodeO', {
+	//Common Node
+	Q.animations('nodeB', {
 		shine: { frames: [0, 1, 2], rate: 3 }
 	});
 
 	Q.Sprite.extend("Node", {
+	init: function(p) {
+		this._super(p, {
+			sprite:"nodeB",
+			sheet:"nodeB",
+			frame: 0
+		});
+
+			this.add('animation, tween');
+	},
+
+	step: function(dt) {
+		this.play("shine");
+	}
+});
+
+	//Node End
+	Q.animations('nodeO', {
+		shine: { frames: [0, 1, 2], rate: 3 }
+	});
+
+	Q.Sprite.extend("NodeEnd", {
 	init: function(p) {
 		this._super(p, {
 			sprite:"nodeO",
@@ -153,7 +175,9 @@ var game = function () {
 	step: function(dt) {
 		this.play("shine");
 	}
-});
+	});
+
+	//TODO disparador o algo parecido, cuando el jugador legue gana
 
 	/*==============================
 	=          Background          =
