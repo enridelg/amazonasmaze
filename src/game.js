@@ -14,6 +14,9 @@ var game = function () {
 		.setup({width: 320, height:  480})
 		.controls().touch();
 
+		Q.gravityY = 0;
+		Q.gravityX = 0;
+
 	/*==============================
 	=          		Boat		         =
 	==============================*/
@@ -31,10 +34,128 @@ var game = function () {
 	});
 
 	Q.Sprite.extend("Boat", {
+		init: function(p) {
+			this._super(p, {
+				sheet: "boatT",
+				sprite: "boat",
+				frame: 0,
+				moving: false,
+				speed: 300,
+				vx: 0,
+				vy: 0
+					//frame: 0,
+					//jumpSpeed: -400,
+					//speed: 300
+
+				});
+
+				this.add('2d, animation, tween');
+				this.play("stand_right");
+				this.on("hit");
+		},
+		hit: function(collision){
+			console.log(collision.obj);
+			a = collision.obj;
+		},
+		step: function(dt) {
+			if(!this.p.moving){
+				if(Q.inputs['up'] && map_data[this.p.actualNode].north != null){
+					//nos movemos y hacemos animacion
+					Q.inputs['up'] = false;
+					this.p.moving = true;
+					this.p.actualNode = map_data[this.p.actualNode].north;
+					this.p.vy = -this.p.speed;
+					this.play("move_top");
+
+				}else if(Q.inputs['down'] && map_data[this.p.actualNode].south != null){
+					//nos movemos y hacemos animacion
+					Q.inputs['down'] = false;
+					this.p.moving = true;
+					this.p.actualNode = map_data[this.p.actualNode].south;
+					this.p.vy = this.p.speed;
+					this.play("move_bottom");
+
+				}else if(Q.inputs['left'] && map_data[this.p.actualNode].west != null){
+					//nos movemos y hacemos animacion
+					Q.inputs['left'] = false;
+					this.p.moving = true;
+					this.p.actualNode = map_data[this.p.actualNode].west;
+					this.p.vx = -this.p.speed;
+					this.play("move_left");
+
+				}else if(Q.inputs['right'] && map_data[this.p.actualNode].east != null){
+					//nos movemos y hacemos animacion
+					Q.inputs['right'] = false;
+					this.p.moving = true;
+					this.p.actualNode = map_data[this.p.actualNode].east;
+					this.p.vx = this.p.speed;
+					this.play("move_right");
+				}
+			}else{
+				if(this.p.vx > 0 || this.p.vy > 0){
+					if(this.p.x + dt * this.p.vx > map_data[this.p.actualNode].x ||
+						this.p.y + dt * this.p.vy > map_data[this.p.actualNode].y){
+
+							if(this.p.vx > 0){ //right
+								this.p.vx = 0;
+								this.p.x = map_data[this.p.actualNode].x;
+								this.play("stand_right");
+							}
+							else{							//botom
+								this.p.vy = 0;
+								this.p.y = map_data[this.p.actualNode].y;
+								this.play("stand_bottom");
+							}
+							this.p.moving = false;
+						}else{
+							this.p.x = this.p.x + dt * this.p.vx;
+							this.p.y = this.p.y + dt * this.p.vy;
+						}
+
+				}else {
+					if(this.p.x + dt * this.p.vx < map_data[this.p.actualNode].x ||
+						this.p.y + dt * this.p.vy < map_data[this.p.actualNode].y){
+							if(this.p.vx < 0){ //left
+								this.p.vx = 0;
+								this.p.x = map_data[this.p.actualNode].x;
+								this.play("stand_left");
+							}
+							else{							//top
+								this.p.vy = 0;
+								this.p.y = map_data[this.p.actualNode].y;
+								this.play("stand_top");
+							}
+							this.p.moving = false;
+						}else{
+							this.p.x = this.p.x + dt * this.p.vx;
+							this.p.y = this.p.y + dt * this.p.vy;
+						}
+				}
+
+			}
+		}
+	});
+
+	/*==============================
+	=        Enemy Boat		         =
+	==============================*/
+
+	Q.animations('eBoat', {
+		move_right: 		{ frames: [19, 20, 21, 22, 23, 24, 25, 26], rate: 1/5 },
+		move_left: 		{ frames: [46, 47, 48, 49, 50, 51, 52, 53], rate: 1/5 },
+		move_top: 		{ frames: [1, 2, 3, 4, 5, 6, 7, 8], rate: 1/5 },
+		move_bottom: 		{ frames: [37, 38, 39, 40, 41, 42, 43, 44], rate: 1/5 },
+		stand_right: 	{ frames: [18] },
+		stand_left: 	{ frames: [45] },
+		stand_top: 	{ frames: [0] },
+		stand_bottom: 	{ frames: [36] }
+	});
+
+	Q.Sprite.extend("EBoat", {
 	init: function(p) {
 		this._super(p, {
-			sheet: "boatT",
-			sprite: "boat",
+			sheet: "eBoatT",
+			sprite: "eBoat",
 			frame: 0,
 			moving: false,
 			speed: 300,
@@ -52,6 +173,7 @@ var game = function () {
 
 	step: function(dt) {
 		if(!this.p.moving){
+			/*
 			if(Q.inputs['up'] && map_data[this.p.actualNode].north != null){
 				//nos movemos y hacemos animacion
 				Q.inputs['up'] = false;
@@ -84,8 +206,8 @@ var game = function () {
 				this.p.vx = this.p.speed;
 				this.play("move_right");
 			}
+			*/
 		}else{
-			console.log(this.p.vx + " " + this.p.vy)
 			if(this.p.vx > 0 || this.p.vy > 0){
 				if(this.p.x + dt * this.p.vx > map_data[this.p.actualNode].x ||
 					this.p.y + dt * this.p.vy > map_data[this.p.actualNode].y){
@@ -113,7 +235,6 @@ var game = function () {
 							this.p.vx = 0;
 							this.p.x = map_data[this.p.actualNode].x;
 							this.play("stand_left");
-							console.log("left");
 						}
 						else{							//top
 							this.p.vy = 0;
@@ -129,7 +250,9 @@ var game = function () {
 
 		}
 	}
-});
+	});
+
+
 
 	/*==============================
 	=          		Nodes	         =
@@ -141,20 +264,21 @@ var game = function () {
 	});
 
 	Q.Sprite.extend("Node", {
-	init: function(p) {
-		this._super(p, {
-			sprite:"nodeB",
-			sheet:"nodeB",
-			frame: 0
-		});
+		init: function(p) {
+			this._super(p, {
+				sprite:"nodeB",
+				sheet:"nodeB",
+				frame: 0,
+				sensor: true
+			});
 
-			this.add('animation, tween');
-	},
+				this.add('animation, tween');
+		},
 
-	step: function(dt) {
-		this.play("shine");
-	}
-});
+		step: function(dt) {
+			this.play("shine");
+		}
+	});
 
 	//Node End
 	Q.animations('nodeO', {
@@ -162,22 +286,32 @@ var game = function () {
 	});
 
 	Q.Sprite.extend("NodeEnd", {
-	init: function(p) {
-		this._super(p, {
-			sprite:"nodeO",
-			sheet:"nodeO",
-			frame: 0
+		init: function(p) {
+			this._super(p, {
+				sprite:"nodeO",
+				sheet:"nodeO",
+				frame: 0,
+				sensor: true
 		});
 
 			this.add('animation, tween');
-	},
+			this.on("sensor");
+			this.on("hit", function(collide){
+				console.log("hola");
+			})
+		},
+		sensor: function(sensor) {
+			console.log("sensor");
+			if(sensor.isA("Boat")){
+				console.log("win");
+			}
+		},
 
-	step: function(dt) {
-		this.play("shine");
-	}
+		step: function(dt) {
+			this.play("shine");
+		}
 	});
 
-	//TODO disparador o algo parecido, cuando el jugador legue gana
 
 	/*==============================
 	=          Background          =
@@ -287,16 +421,15 @@ var game = function () {
 	/*-----   End of Scenes   -----*/
 
 	Q.load(["intro_f.png",
-						"boat.png", "boat_enemy.png", "boat.json",
+						"boat.png", "boat_enemy.png", "boat.json", "eBoat.json",
 						"nodes.png", "nodes.json",
 						"bg.png", "tiles.png"], function() {
 		Q.compileSheets("boat.png","boat.json");
+		Q.compileSheets("boat_enemy.png","eBoat.json");
 		Q.compileSheets("nodes.png","nodes.json");
-		Q.stageScene("initGame");
-	});
-
-	Q.loadTMX("level1.tmx, tiles.png", function() {
-
+		Q.loadTMX("level1.tmx, tiles.png", function() {
+			Q.stageScene("initGame");
+		});
 	});
 
 };
