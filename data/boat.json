@@ -2,5 +2,6 @@
 	"boatR":{"sx":0,"sy":64,"tileW":32,"tileH":32,"frames":9},
 	"boatL":{"sx":0,"sy":160,"tileW":32,"tileH":32,"frames":9},
   "boatT":{"sx":0,"sy":0,"tileW":32,"tileH":32,"frames":9},
-  "boatB":{"sx":0,"sy":128,"tileW":32,"tileH":32,"frames":9}
+  "boatB":{"sx":0,"sy":160,"tileW":32,"tileH":32,"frames":9},
+	"boatSink":{"sx":0,"sy":192,"tileW":32,"tileH":32,"frames":4}
 }

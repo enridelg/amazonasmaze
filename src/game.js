@@ -19,22 +19,23 @@ var game = function () {
 	==============================*/
 
 	Q.animations('boat', {
-		/*
-		move_right: 		{ frames: [1, 2, 3], rate: 1/10 },
-		move_left: 		{ frames: [15, 16, 17], rate: 1/10 },
-		move_top: 		{ frames: [15, 16, 17], rate: 1/10 },
-		move_bottom: 		{ frames: [15, 16, 17], rate: 1/10 },
-		stand_right: 	{ frames: [0] },
-		stand_left: 	{ frames: [0] },
+		move_right: 		{ frames: [19, 20, 21, 22, 23, 24, 25, 26], rate: 1/5 },
+		move_left: 		{ frames: [46, 47, 48, 49, 50, 51, 52, 53], rate: 1/5 },
+		move_top: 		{ frames: [1, 2, 3, 4, 5, 6, 7, 8], rate: 1/5 },
+		move_bottom: 		{ frames: [37, 38, 39, 40, 41, 42, 43, 44], rate: 1/5 },
+		stand_right: 	{ frames: [18] },
+		stand_left: 	{ frames: [45] },
 		stand_top: 	{ frames: [0] },
-		stand_bottom: 	{ frames: [0] }*/ //TODO
+		stand_bottom: 	{ frames: [36] },
+		sink_boat: { frames: [56, 57, 58, 59] }
 	});
 
 	Q.Sprite.extend("Boat", {
 	init: function(p) {
 		this._super(p, {
-			sheet: "boatR",
+			sheet: "boatT",
 			sprite: "boat",
+			frame: 0,
 			moving: false,
 			speed: 300,
 			vx: 0,
@@ -46,6 +47,7 @@ var game = function () {
 			});
 
 			this.add('animation, tween');
+			this.play("stand_right");
 	},
 
 	step: function(dt) {
@@ -54,47 +56,70 @@ var game = function () {
 				//nos movemos y hacemos animacion
 				Q.inputs['up'] = false;
 				this.p.moving = true;
-				this.p.vy = -this.p.speed;
 				this.p.actualNode = map_data[this.p.actualNode].north;
+				this.p.vy = -this.p.speed;
+				this.play("move_top");
+
 			}else if(Q.inputs['down'] && map_data[this.p.actualNode].south != null){
 				//nos movemos y hacemos animacion
 				Q.inputs['down'] = false;
 				this.p.moving = true;
-				this.p.vy = this.p.speed;
 				this.p.actualNode = map_data[this.p.actualNode].south;
+				this.p.vy = this.p.speed;
+				this.play("move_bottom");
+
 			}else if(Q.inputs['left'] && map_data[this.p.actualNode].west != null){
 				//nos movemos y hacemos animacion
 				Q.inputs['left'] = false;
 				this.p.moving = true;
-				this.p.vx = -this.p.speed;
 				this.p.actualNode = map_data[this.p.actualNode].west;
+				this.p.vx = -this.p.speed;
+				this.play("move_left");
+
 			}else if(Q.inputs['right'] && map_data[this.p.actualNode].east != null){
 				//nos movemos y hacemos animacion
 				Q.inputs['right'] = false;
 				this.p.moving = true;
-				this.p.vx = this.p.speed;
 				this.p.actualNode = map_data[this.p.actualNode].east;
+				this.p.vx = this.p.speed;
+				this.play("move_right");
 			}
 		}else{
+			console.log(this.p.vx + " " + this.p.vy)
 			if(this.p.vx > 0 || this.p.vy > 0){
 				if(this.p.x + dt * this.p.vx > map_data[this.p.actualNode].x ||
 					this.p.y + dt * this.p.vy > map_data[this.p.actualNode].y){
-						this.p.x = map_data[this.p.actualNode].x;
-						this.p.y = map_data[this.p.actualNode].y;
-						this.p.vx = 0;
-						this.p.vy = 0;
+
+						if(this.p.vx > 0){ //right
+							this.p.vx = 0;
+							this.p.x = map_data[this.p.actualNode].x;
+							this.play("stand_right");
+						}
+						else{							//botom
+							this.p.vy = 0;
+							this.p.y = map_data[this.p.actualNode].y;
+							this.play("stand_bottom");
+						}
 						this.p.moving = false;
 					}else{
 						this.p.x = this.p.x + dt * this.p.vx;
 						this.p.y = this.p.y + dt * this.p.vy;
 					}
+
 			}else {
 				if(this.p.x + dt * this.p.vx < map_data[this.p.actualNode].x ||
 					this.p.y + dt * this.p.vy < map_data[this.p.actualNode].y){
-						this.p.x = map_data[this.p.actualNode].x;
-						this.p.y = map_data[this.p.actualNode].y;
-						this.p.vx = 0;
-						this.p.vy = 0;
+						if(this.p.vx < 0){ //left
+							this.p.vx = 0;
+							this.p.x = map_data[this.p.actualNode].x;
+							this.play("stand_left");
+							console.log("left");
+						}
+						else{							//top
+							this.p.vy = 0;
+							this.p.y = map_data[this.p.actualNode].y;
+							this.play("stand_top");
+						}
 						this.p.moving = false;
 					}else{
 						this.p.x = this.p.x + dt * this.p.vx;
@@ -110,11 +135,23 @@ var game = function () {
 	=          		Node		         =
 	==============================*/
 
+	Q.animations('nodeO', {
+		shine: { frames: [0, 1, 2], rate: 3 }
+	});
+
 	Q.Sprite.extend("Node", {
 	init: function(p) {
-		this._super(p, {asset:""});
+		this._super(p, {
+			sprite:"nodeO",
+			sheet:"nodeO",
+			frame: 0
+		});
 
 			this.add('animation, tween');
+	},
+
+	step: function(dt) {
+		this.play("shine");
 	}
 });
 
@@ -187,14 +224,10 @@ var game = function () {
 		//crate elements
 
 		boat = createElements(stage);
+		stage.insert(boat);
 
 		stage.add("viewport").follow(boat);
 	 	//var boat = stage.insert(new Q.Boat({x:20, y:20}));
-
-	 	//Q.state.reset({ coins: 0 });
-
-	 	//Q.stageScene('hud', 1);
-
 	 	//Q.audio.play('music_main.mp3', {loop: true});
 /*
 	 	var container = stage.insert(new Q.UI.Container({
@@ -229,10 +262,12 @@ var game = function () {
 
 	/*-----   End of Scenes   -----*/
 
-	Q.load(["boat.png", "boat_enemy.png", "boat.json",
-						"intro_f.png",
+	Q.load(["intro_f.png",
+						"boat.png", "boat_enemy.png", "boat.json",
+						"nodes.png", "nodes.json",
 						"bg.png", "tiles.png"], function() {
 		Q.compileSheets("boat.png","boat.json");
+		Q.compileSheets("nodes.png","nodes.json");
 		Q.stageScene("initGame");
 	});
 
