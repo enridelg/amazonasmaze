@@ -36,18 +36,14 @@ var game = function () {
 	Q.Sprite.extend("Boat", {
 		init: function(p) {
 			this._super(p, {
-				sheet: "boatT",
-				sprite: "boat",
-				frame: 0,
-				moving: false,
-				speed: 300,
-				collisionMask: Q.SPRITE_ACTIVE,
-				vx: 0,
-				vy: 0
-					//frame: 0,
-					//jumpSpeed: -400,
-					//speed: 300
-
+					sheet: "boatT",
+					sprite: "boat",
+					frame: 0,
+					moving: false,
+					speed: 300,
+					collisionMask: Q.SPRITE_ACTIVE,
+					vx: 0,
+					vy: 0
 				});
 
 				this.add('2d, animation, tween');
@@ -55,8 +51,13 @@ var game = function () {
 				this.on("hit");
 		},
 		hit: function(collision){
-			console.log(collision.obj);
-			a = collision.obj;
+			// Asi ponemos lo que queramos
+			Q.state.set("message","Corred Insensatos!");
+			// Asi lo quitamos
+			//Q.state.set("message","");
+			
+			// console.log(collision.obj);
+			// a = collision.obj;
 		},
 		step: function(dt) {
 			if(!this.p.moving){
@@ -333,6 +334,40 @@ var game = function () {
 
 	/*-----  End of Background   ----*/
 
+
+
+
+	/*==================================
+	=            Message            =
+	==================================*/
+
+	Q.UI.Text.extend("Message", {
+		init: function(p) {
+			this._super({
+				label: "Te han visto",
+				color: "white",
+				x: 150,
+				y: 50
+			});
+			Q.state.on("change.message", this, "message");
+		},
+
+		message: function(message) {
+			this.p.label = message;
+		}
+	});
+
+	Q.scene("stats", function(stage) {
+		var statsContainer = stage.insert(new Q.UI.Container({
+				x: 0,
+				y: 0
+			})
+		);
+		var messageLabel = stage.insert(new Q.Message(), statsContainer);
+	});
+
+
+
 	/*==============================
 	=            Scenes            =
 	==============================*/
@@ -381,7 +416,8 @@ var game = function () {
 	Q.scene("level1",function(stage) {
 		Q.stageTMX("level1.tmx",stage);
 		//crate elements
-
+		Q.state.reset({ message: ""});
+		Q.stageScene("stats", 1);
 		boat = createElements(stage);
 		stage.insert(boat);
 
