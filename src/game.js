@@ -28,6 +28,7 @@ var game = function () {
 	 */
 	function searchForTraceNodeAndReplace(nodePair) {
 		// TODO: HAY UN FALLO AL VOLVER DESDE OTRA DIR AL NODO
+		// TODO: NO SIEMPRE OCURRE.
 		// TODO: SOLUCIONAR FALLO
 		var encontrado = false;
 		for(node in trace) {
@@ -68,25 +69,32 @@ var game = function () {
 					collisionMask: Q.SPRITE_ACTIVE,
 					vx: 0,
 					vy: 0,
-					sword: false
+					sword: false,
+					enemyIsActive: false
 				});
-
 				this.add('2d, animation, tween');
 				this.play("stand_right");
 				this.on("hit");
 		},
 		hit: function(collision){
 			// Asi ponemos lo que queramos
-			Q.state.set("message","Corred Insensatos!");
+			//Q.state.set("message","Corred Insensatos!");
 			// Asi lo quitamos
 			//Q.state.set("message","");
 
 			// console.log(collision.obj);
 			// a = collision.obj;
 		},
+
 		step: function(dt) {
+			// Mover esto de sitio, de momento es comodo.
+			if(trace.length == 0) {
+				Q.state.set("message","");
+			}
+			if(trace.length == 6) {
+				this.releaseEnemy();
+			}
 			if(!this.p.moving){
-				console.log(trace.length);
 				if(Q.inputs['up'] && map_data[this.p.actualNode].north != null){
 					//nos movemos y hacemos animacion
 					Q.inputs['up'] = false;
@@ -181,6 +189,18 @@ var game = function () {
 				}
 
 			}
+		},
+
+		releaseEnemy: function() {
+			if(!this.p.enemyIsActive) {
+
+				console.log("Releasing enemy");
+
+				// TODO ESTARIA GUAY PONER UN TE HAN VISTO 1sec
+				// TODO DESPUES UN CORRE!
+				Q.state.set("message","Te han visto!");
+			}
+
 		}
 	});
 
@@ -209,10 +229,6 @@ var game = function () {
 			speed: 300,
 			vx: 0,
 			vy: 0
-				//frame: 0,
-				//jumpSpeed: -400,
-				//speed: 300
-
 			});
 
 			this.add('animation, tween');
@@ -494,7 +510,7 @@ var game = function () {
 	Q.scene("level1",function(stage) {
 		Q.stageTMX("level1.tmx",stage);
 		//crate elements
-		Q.state.reset({ message: ""});
+		Q.state.reset({ message: " "});
 		Q.stageScene("stats", 1);
 		boat = createElements(stage);
 		stage.insert(boat);
