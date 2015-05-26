@@ -43,7 +43,8 @@ var game = function () {
 					speed: 300,
 					collisionMask: Q.SPRITE_ACTIVE,
 					vx: 0,
-					vy: 0
+					vy: 0,
+					sword: false
 				});
 
 				this.add('2d, animation, tween');
@@ -55,7 +56,7 @@ var game = function () {
 			Q.state.set("message","Corred Insensatos!");
 			// Asi lo quitamos
 			//Q.state.set("message","");
-			
+
 			// console.log(collision.obj);
 			// a = collision.obj;
 		},
@@ -271,7 +272,8 @@ var game = function () {
 				sprite:"nodeB",
 				sheet:"nodeB",
 				frame: 0,
-				sensor: true
+				type: Q.SPRITE_NONE
+
 			});
 
 				this.add('animation, tween');
@@ -314,6 +316,37 @@ var game = function () {
 		}
 	});
 
+	/*==============================
+	=          		Sword 	         =
+	==============================*/
+
+	Q.animations('sword', {
+	  float: { frames: [0, 1, 2, 3], rate: 1/2 }
+	});
+
+	Q.Sprite.extend("Sword", {
+	  init: function(p) {
+	    this._super(p, {
+	      sprite:"sword",
+	      sheet:"sword",
+	      frame: 0,
+	      sensor: true
+	    });
+
+	      this.add('animation, tween');
+	      this.on("sensor");
+	    },
+	    sensor: function(sensor) {
+	      if(sensor.isA("Boat")){
+	        this.destroy();
+	        sensor.p.sword = true;
+	      }
+	    },
+
+	  step: function(dt) {
+	    this.play("float");
+	  }
+	});
 
 	/*==============================
 	=          Background          =
@@ -460,10 +493,14 @@ var game = function () {
 	Q.load(["intro_f.png",
 						"boat.png", "boat_enemy.png", "boat.json", "eBoat.json",
 						"nodes.png", "nodes.json",
+						"sword.png", "sword.json",
 						"bg.png", "tiles.png"], function() {
+
 		Q.compileSheets("boat.png","boat.json");
 		Q.compileSheets("boat_enemy.png","eBoat.json");
 		Q.compileSheets("nodes.png","nodes.json");
+		Q.compileSheets("sword.png","sword.json");
+
 		Q.loadTMX("level1.tmx, tiles.png", function() {
 			Q.stageScene("initGame");
 		});
