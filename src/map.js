@@ -18,7 +18,7 @@ function createElements(stage) {
       //barco enemigo
       enemy_boat = new Q.EBoat({x:map_data[node].x, y:map_data[node].y, actualNode:node});
     }else if(node_type == "3"){
-      //serpiente
+      stage.insert(new Q.Sword({x:map_data[node].x, y:map_data[node].y}));
     }else if(node_type == "4"){
       //arma
     }else if(node_type == "5"){
