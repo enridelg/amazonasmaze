@@ -27,6 +27,8 @@ var game = function () {
 	 * lo actualiza. Si no lo encuentra devuelve falso
 	 */
 	function searchForTraceNodeAndReplace(nodePair) {
+		// TODO: HAY UN FALLO AL VOLVER DESDE OTRA DIR AL NODO
+		// TODO: SOLUCIONAR FALLO
 		var encontrado = false;
 		for(node in trace) {
 			// Si encontramos el nodo reescribimos la direccion
@@ -84,6 +86,7 @@ var game = function () {
 		},
 		step: function(dt) {
 			if(!this.p.moving){
+				console.log(trace.length);
 				if(Q.inputs['up'] && map_data[this.p.actualNode].north != null){
 					//nos movemos y hacemos animacion
 					Q.inputs['up'] = false;
@@ -101,6 +104,11 @@ var game = function () {
 					//nos movemos y hacemos animacion
 					Q.inputs['down'] = false;
 					this.p.moving = true;
+					var valueToPush = new Array();
+					valueToPush[0] = this.p.actualNode;
+					valueToPush[1] = "south";
+					if(!searchForTraceNodeAndReplace(valueToPush))
+						trace.push(valueToPush);
 					this.p.actualNode = map_data[this.p.actualNode].south;
 					this.p.vy = this.p.speed;
 					this.play("move_bottom");
@@ -109,6 +117,11 @@ var game = function () {
 					//nos movemos y hacemos animacion
 					Q.inputs['left'] = false;
 					this.p.moving = true;
+					var valueToPush = new Array();
+					valueToPush[0] = this.p.actualNode;
+					valueToPush[1] = "west";
+					if(!searchForTraceNodeAndReplace(valueToPush))
+						trace.push(valueToPush);
 					this.p.actualNode = map_data[this.p.actualNode].west;
 					this.p.vx = -this.p.speed;
 					this.play("move_left");
@@ -117,6 +130,11 @@ var game = function () {
 					//nos movemos y hacemos animacion
 					Q.inputs['right'] = false;
 					this.p.moving = true;
+					var valueToPush = new Array();
+					valueToPush[0] = this.p.actualNode;
+					valueToPush[1] = "east";
+					if(!searchForTraceNodeAndReplace(valueToPush))
+						trace.push(valueToPush);
 					this.p.actualNode = map_data[this.p.actualNode].east;
 					this.p.vx = this.p.speed;
 					this.play("move_right");
