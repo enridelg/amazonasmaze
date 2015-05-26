@@ -243,7 +243,7 @@ var game = function () {
 			sprite: "eBoat",
 			frame: 0,
 			moving: false,
-			speed: 150,
+			speed: 400,
 			vx: 0,
 			vy: 0
 		});
@@ -257,8 +257,7 @@ var game = function () {
 			this.p.actualNode = trace[0][0];
 		}
 		else if(trace.length > 6) {
-			if(!this.p.moving){
-
+			if(!this.p.moving) {
 				var idx = 0;
 				var terminar = false;
 				while(idx < trace.length && !terminar) {
@@ -607,7 +606,7 @@ var game = function () {
 		Q.stageScene("stats", 1);
 		boat = createElements(stage);
 		stage.insert(boat);
-
+		trace = new Array();
 		stage.add("viewport").follow(boat);
 	 	//var boat = stage.insert(new Q.Boat({x:20, y:20}));
 	 	//Q.audio.play('music_main.mp3', {loop: true});
