@@ -17,6 +17,28 @@ var game = function () {
 		Q.gravityY = 0;
 		Q.gravityX = 0;
 
+	/**
+	 * Rastro que deja el barco
+	 */
+	var trace = new Array();
+
+	/**
+	 * Busca si hemos pasado ya por un nodo, si lo encuentra
+	 * lo actualiza. Si no lo encuentra devuelve falso
+	 */
+	function searchForTraceNodeAndReplace(nodePair) {
+		var encontrado = false;
+		for(node in trace) {
+			// Si encontramos el nodo reescribimos la direccion
+			if(trace[node].indexOf(nodePair[0]) >= 0) {
+				encontrado = true;
+				trace[node] = nodePair;
+			}
+		}
+		return encontrado;
+	}
+
+
 	/*==============================
 	=          		Boat		         =
 	==============================*/
@@ -55,7 +77,7 @@ var game = function () {
 			Q.state.set("message","Corred Insensatos!");
 			// Asi lo quitamos
 			//Q.state.set("message","");
-			
+
 			// console.log(collision.obj);
 			// a = collision.obj;
 		},
@@ -65,6 +87,11 @@ var game = function () {
 					//nos movemos y hacemos animacion
 					Q.inputs['up'] = false;
 					this.p.moving = true;
+					var valueToPush = new Array();
+					valueToPush[0] = this.p.actualNode;
+					valueToPush[1] = "north";
+					if(!searchForTraceNodeAndReplace(valueToPush))
+						trace.push(valueToPush);
 					this.p.actualNode = map_data[this.p.actualNode].north;
 					this.p.vy = -this.p.speed;
 					this.play("move_top");
