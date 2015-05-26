@@ -54,7 +54,7 @@ var game = function () {
 		stand_left: 	{ frames: [45] },
 		stand_top: 	{ frames: [0] },
 		stand_bottom: 	{ frames: [36] },
-		sink_boat: { frames: [56, 57, 58, 59] }
+		sink_boat: { frames: [54, 55, 56, 57], rate: 3 }
 	});
 
 	Q.Sprite.extend("Boat", {
@@ -68,7 +68,8 @@ var game = function () {
 					collisionMask: Q.SPRITE_ACTIVE,
 					vx: 0,
 					vy: 0,
-					sword: false
+					sword: false,
+					dead:false
 				});
 
 				this.add('2d, animation, tween');
@@ -84,8 +85,20 @@ var game = function () {
 			// console.log(collision.obj);
 			// a = collision.obj;
 		},
+		dead: function(){
+			this.p.dead = true;
+			this.p.vx = 0;
+			this.p.vy = 0;
+			this.play("sink_boat", 1);
+			this.animate({ x: this.p.x, y: this.p.y}, 3, { callback: this.destroyBoat});
+			//this.destroy();
+		},
+		destroyBoat: function(){
+			this.destroy();
+			Q.stageScene("endGame",1, { label: "Game Over" });
+		},
 		step: function(dt) {
-			if(!this.p.moving){
+			if(!this.p.moving && !this.p.dead){
 				console.log(trace.length);
 				if(Q.inputs['up'] && map_data[this.p.actualNode].north != null){
 					//nos movemos y hacemos animacion
@@ -345,14 +358,11 @@ var game = function () {
 
 			this.add('animation, tween');
 			this.on("sensor");
-			this.on("hit", function(collide){
-				console.log("hola");
-			})
 		},
 		sensor: function(sensor) {
-			console.log("sensor");
 			if(sensor.isA("Boat")){
-				console.log("win");
+				Q.stageScene("endGame",1, { label: "You Win!!" });
+				Q.stage().pause();
 			}
 		},
 
@@ -385,6 +395,44 @@ var game = function () {
 	      if(sensor.isA("Boat")){
 	        this.destroy();
 	        sensor.p.sword = true;
+	      }
+	    },
+
+	  step: function(dt) {
+	    this.play("float");
+	  }
+	});
+
+	/*==============================
+	=          Crocodile 	         =
+	==============================*/
+
+	Q.animations('crocodile', {
+	  float: { frames: [0, 1, 2, 3, 4, 5], rate: 2 },
+	  attack: { frames: [6, 7, 6, 4], rate: 1/2 }
+	});
+
+	Q.Sprite.extend("Crocodile", {
+	  init: function(p) {
+	    this._super(p, {
+	      sprite:"crocodile",
+	      sheet:"crocodile",
+	      frame: 0,
+				sensor: true
+	    });
+
+	      this.add('animation, tween');
+	      this.on("sensor");
+	    },
+	    sensor: function(sensor) {
+	      if(sensor.isA("Boat")){
+	        if(sensor.p.sword){
+	          this.destroy();
+	          //TODO Add points
+	        }else{
+						this.play("attack", 1);
+	          sensor.dead();
+	        }
 	      }
 	    },
 
@@ -539,12 +587,14 @@ var game = function () {
 						"boat.png", "boat_enemy.png", "boat.json", "eBoat.json",
 						"nodes.png", "nodes.json",
 						"sword.png", "sword.json",
+						"crocodile.png", "crocodile.json",
 						"bg.png", "tiles.png"], function() {
 
 		Q.compileSheets("boat.png","boat.json");
 		Q.compileSheets("boat_enemy.png","eBoat.json");
 		Q.compileSheets("nodes.png","nodes.json");
 		Q.compileSheets("sword.png","sword.json");
+		Q.compileSheets("crocodile.png","crocodile.json");
 
 		Q.loadTMX("level1.tmx, tiles.png", function() {
 			Q.stageScene("initGame");
