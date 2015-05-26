@@ -41,6 +41,7 @@ var game = function () {
 				frame: 0,
 				moving: false,
 				speed: 300,
+				collisionMask: Q.SPRITE_ACTIVE,
 				vx: 0,
 				vy: 0
 					//frame: 0,
