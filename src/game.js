@@ -70,11 +70,8 @@ var game = function () {
 					vx: 0,
 					vy: 0,
 					sword: false,
-<<<<<<< HEAD
-					enemyIsActive: false
-=======
+					enemyIsActive: false,
 					dead:false
->>>>>>> e6bbc7f9a8b59bd87f04d631ae3740a8a531ebe2
 				});
 				this.add('2d, animation, tween');
 				this.play("stand_right");
@@ -89,18 +86,7 @@ var game = function () {
 			// console.log(collision.obj);
 			// a = collision.obj;
 		},
-<<<<<<< HEAD
 
-		step: function(dt) {
-			// Mover esto de sitio, de momento es comodo.
-			if(trace.length == 0) {
-				Q.state.set("message","");
-			}
-			if(trace.length == 6) {
-				this.releaseEnemy();
-			}
-			if(!this.p.moving){
-=======
 		dead: function(){
 			this.p.dead = true;
 			this.p.vx = 0;
@@ -113,10 +99,18 @@ var game = function () {
 			this.destroy();
 			Q.stageScene("endGame",1, { label: "Game Over" });
 		},
+
+
+
 		step: function(dt) {
+			// Mover esto de sitio, de momento es comodo.
+			if(trace.length == 0) {
+				Q.state.set("message","");
+			}
+			if(trace.length == 6) {
+				this.releaseEnemy();
+			}
 			if(!this.p.moving && !this.p.dead){
-				console.log(trace.length);
->>>>>>> e6bbc7f9a8b59bd87f04d631ae3740a8a531ebe2
 				if(Q.inputs['up'] && map_data[this.p.actualNode].north != null){
 					//nos movemos y hacemos animacion
 					Q.inputs['up'] = false;
