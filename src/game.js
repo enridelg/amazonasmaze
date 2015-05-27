@@ -244,12 +244,23 @@ var game = function () {
 			frame: 0,
 			moving: false,
 			speed: 400,
+			stop: false;
 			vx: 0,
 			vy: 0
 		});
 
 		this.add('animation, tween');
 		this.play("stand_right");
+		this.on("hit");
+	},
+	hit: function(collision) {
+		if(collision.obj.isA("Boat")){
+			this.stop = true;
+			this.p.vx = 0;
+			this.p.vy = 0;
+			this.play("stand_right");
+			collision.obj.dead();
+		}
 	},
 
 	step: function(dt) {
@@ -267,65 +278,30 @@ var game = function () {
 						idx++;
 				}
 
-				if(trace[idx][1] == "north") {
-					console.log("NORTEEEEEE");
-					this.p.actualNode = map_data[this.p.actualNode].north;
-					this.p.vy = -this.p.speed;
-					this.play("move_top");
-				}
-				else if(trace[idx][1] == "south") {
-					console.log("SUUUUUUR");
-					this.p.actualNode = map_data[this.p.actualNode].south;
-					this.p.vy = this.p.speed;
-					this.play("move_bottom");
-				}
-				else if(trace[idx][1] == "west") {
-					console.log("WEEEEEEEEST");
-					this.p.actualNode = map_data[this.p.actualNode].west;
-					this.p.vx = -this.p.speed;
-					this.play("move_left");
-				}
-				else if(trace[idx][1] == "east") {
-					console.log("ESTEEEEEEEEE");
-					this.p.actualNode = map_data[this.p.actualNode].east;
-					this.p.vx = this.p.speed;
-					this.play("move_right");
-				}
-				this.p.moving = true;
-				/*
-				if(Q.inputs['up'] && map_data[this.p.actualNode].north != null){
-					//nos movemos y hacemos animacion
-					Q.inputs['up'] = false;
+				if(!trace.length == 0) {
+					console.log(trace.length);
+					if(trace[idx][1] == "north") {
+						this.p.actualNode = map_data[this.p.actualNode].north;
+						this.p.vy = -this.p.speed;
+						this.play("move_top");
+					}
+					else if(trace[idx][1] == "south") {
+						this.p.actualNode = map_data[this.p.actualNode].south;
+						this.p.vy = this.p.speed;
+						this.play("move_bottom");
+					}
+					else if(trace[idx][1] == "west") {
+						this.p.actualNode = map_data[this.p.actualNode].west;
+						this.p.vx = -this.p.speed;
+						this.play("move_left");
+					}
+					else if(trace[idx][1] == "east") {
+						this.p.actualNode = map_data[this.p.actualNode].east;
+						this.p.vx = this.p.speed;
+						this.play("move_right");
+					}
 					this.p.moving = true;
-					this.p.actualNode = map_data[this.p.actualNode].north;
-					this.p.vy = -this.p.speed;
-					this.play("move_top");
-
-				}else if(Q.inputs['down'] && map_data[this.p.actualNode].south != null){
-					//nos movemos y hacemos animacion
-					Q.inputs['down'] = false;
-					this.p.moving = true;
-					this.p.actualNode = map_data[this.p.actualNode].south;
-					this.p.vy = this.p.speed;
-					this.play("move_bottom");
-
-				}else if(Q.inputs['left'] && map_data[this.p.actualNode].west != null){
-					//nos movemos y hacemos animacion
-					Q.inputs['left'] = false;
-					this.p.moving = true;
-					this.p.actualNode = map_data[this.p.actualNode].west;
-					this.p.vx = -this.p.speed;
-					this.play("move_left");
-
-				}else if(Q.inputs['right'] && map_data[this.p.actualNode].east != null){
-					//nos movemos y hacemos animacion
-					Q.inputs['right'] = false;
-					this.p.moving = true;
-					this.p.actualNode = map_data[this.p.actualNode].east;
-					this.p.vx = this.p.speed;
-					this.play("move_right");
 				}
-				*/
 			} else {
 				if(this.p.vx > 0 || this.p.vy > 0) {
 					if(this.p.x + dt * this.p.vx > map_data[this.p.actualNode].x ||
@@ -380,7 +356,7 @@ var game = function () {
 
 	//Common Node
 	Q.animations('nodeB', {
-		shine: { frames: [0, 1, 2], rate: 3 }
+		shine: { frames: [0, 1, 2, 1], rate: 0.5 }
 	});
 
 	Q.Sprite.extend("Node", {
@@ -403,7 +379,7 @@ var game = function () {
 
 	//Node End
 	Q.animations('nodeO', {
-		shine: { frames: [0, 1, 2], rate: 3 }
+		shine: { frames: [0, 1, 2, 1], rate: 0.5 }
 	});
 
 	Q.Sprite.extend("NodeEnd", {
@@ -604,9 +580,9 @@ var game = function () {
 		//crate elements
 		Q.state.reset({ message: " "});
 		Q.stageScene("stats", 1);
+		trace = new Array();
 		boat = createElements(stage);
 		stage.insert(boat);
-		trace = new Array();
 		stage.add("viewport").follow(boat);
 	 	//var boat = stage.insert(new Q.Boat({x:20, y:20}));
 	 	//Q.audio.play('music_main.mp3', {loop: true});
