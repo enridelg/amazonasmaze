@@ -210,9 +210,6 @@ var game = function () {
 
 		releaseEnemy: function() {
 			if(!this.p.enemyIsActive) {
-
-				console.log("Releasing enemy");
-
 				// TODO ESTARIA GUAY PONER UN TE HAN VISTO 1sec
 				// TODO DESPUES UN CORRE!
 				Q.state.set("message","Te han visto! Corre!");
@@ -244,7 +241,7 @@ var game = function () {
 			frame: 0,
 			moving: false,
 			speed: 400,
-			stop: false;
+			stop: false,
 			vx: 0,
 			vy: 0
 		});
@@ -278,8 +275,7 @@ var game = function () {
 						idx++;
 				}
 
-				if(!trace.length == 0) {
-					console.log(trace.length);
+				if(!(trace[idx] === undefined)) {
 					if(trace[idx][1] == "north") {
 						this.p.actualNode = map_data[this.p.actualNode].north;
 						this.p.vy = -this.p.speed;
