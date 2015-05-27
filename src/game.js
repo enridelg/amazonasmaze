@@ -66,7 +66,7 @@ var game = function () {
 				sprite: "boat",
 				frame: 0,
 				moving: false,
-				speed: 300,
+				speed: 600,
 				collisionMask: Q.SPRITE_ACTIVE,
 				vx: 0,
 				vy: 0,
@@ -180,9 +180,6 @@ var game = function () {
 								this.play("stand_bottom");
 							}
 							this.p.moving = false;
-						}else{
-							this.p.x = this.p.x + dt * this.p.vx;
-							this.p.y = this.p.y + dt * this.p.vy;
 						}
 
 				}else {
@@ -199,9 +196,6 @@ var game = function () {
 								this.play("stand_top");
 							}
 							this.p.moving = false;
-						}else{
-							this.p.x = this.p.x + dt * this.p.vx;
-							this.p.y = this.p.y + dt * this.p.vy;
 						}
 				}
 
@@ -240,7 +234,7 @@ var game = function () {
 			sprite: "eBoat",
 			frame: 0,
 			moving: false,
-			speed: 400,
+			speed: 500,
 			stop: false,
 			vx: 0,
 			vy: 0
