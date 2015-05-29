@@ -111,7 +111,6 @@ var game = function () {
 			}
 			if(trace.length == 6) {
 				this.releaseEnemy();
-				this.updateScore(100);
 			}
 			if(!this.p.moving && !this.p.dead){
 				if(Q.inputs['up'] && map_data[this.p.actualNode].north != null){
@@ -428,6 +427,7 @@ var game = function () {
 	    	if(sensor.isA("Boat")){
 	        	this.destroy();
 	        	sensor.p.sword = true;
+						Q.state.set("swordLabel", "1");
 	      	}
 	    },
 
@@ -540,6 +540,30 @@ var game = function () {
 		}
 	});
 
+
+	/*==================================
+	=            Sword                 =
+	==================================*/
+
+	Q.UI.Button.extend("SwordLabel", {
+		init: function(p) {
+			this._super({
+				asset: 'swordLabel.png',
+				x: 305,
+				y: 460,
+				scale: 1.2,
+				opacity: 0
+			});
+			Q.state.on("change.swordLabel", this, "swordLabel");
+		},
+
+		swordLabel: function(active) {
+			if(active) {
+				this.p.opacity = 1;
+			}
+		}
+	});
+
 	/*==================================
 	=            Stats Container      =
 	==================================*/
@@ -551,6 +575,7 @@ var game = function () {
 		);
 		var messageLabel = stage.insert(new Q.Message(), statsContainer);
 		var scoreLabel = stage.insert(new Q.Score(), statsContainer);
+		var swordLabel = stage.insert(new Q.SwordLabel(), statsContainer);
 	});
 
 
@@ -605,6 +630,7 @@ var game = function () {
 		//crate elements
 		Q.state.reset({ message: " "});
 		Q.state.reset({ score: "0"});
+		Q.state.reset({ swordLabel: 0});
 		Q.stageScene("stats", 1);
 		trace = new Array();
 		boat = createElements(stage);
@@ -649,6 +675,7 @@ var game = function () {
 						"boat.png", "boat_enemy.png", "boat.json", "eBoat.json",
 						"nodes.png", "nodes.json",
 						"sword.png", "sword.json",
+						"swordLabel.png", "swordLabel.json",
 						"crocodile.png", "crocodile.json",
 						"bg.png", "tiles.png"], function() {
 
@@ -656,6 +683,7 @@ var game = function () {
 		Q.compileSheets("boat_enemy.png","eBoat.json");
 		Q.compileSheets("nodes.png","nodes.json");
 		Q.compileSheets("sword.png","sword.json");
+		Q.compileSheets("swordLabel.png","swordLabel.json");
 		Q.compileSheets("crocodile.png","crocodile.json");
 
 		Q.loadTMX("level1.tmx, tiles.png", function() {
