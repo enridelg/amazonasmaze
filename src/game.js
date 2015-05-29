@@ -513,26 +513,6 @@ var game = function () {
 	    }
 	});
 
-	/*==============================
-	=          Background          =
-	==============================*/
-
-	Q.Sprite.extend("Background",{
-		init: function(p) {
-			this._super(p,{
-				x: Q.width/2,
-				y: Q.height/2,
-				asset: 'intro_f.png'
-			});
-			this.on("touch",function() {
-				Q.stageScene("level1");
-			});
-		}
-	});
-
-	/*-----  End of Background   ----*/
-
-
 
 
 	/*==================================
@@ -616,7 +596,8 @@ var game = function () {
 						"swordLabel.png", "swordLabel.json",
 						"gem.png", "gem.json",
 						"crocodile.png", "crocodile.json",
-						"bg.png", "tiles.png"], function() {
+						"bg.png", "tiles.png",
+						"endNode.png", "enemyNode.png", "objectNode.png"], function() {
 
 		Q.compileSheets("boat.png","boat.json");
 		Q.compileSheets("boat_enemy.png","eBoat.json");
