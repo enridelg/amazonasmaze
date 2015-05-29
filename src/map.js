@@ -22,7 +22,7 @@ function createElements(stage) {
     }else if(node_type == "4"){
       stage.insert(new Q.Sword({x:map_data[node].x, y:map_data[node].y}));
     }else if(node_type == "5"){
-      //objeto de valor para los puntos
+      stage.insert(new Q.Gem({x:map_data[node].x, y:map_data[node].y}));
     }
   }
   stage.insert(enemy_boat);

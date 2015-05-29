@@ -425,7 +425,7 @@ var game = function () {
 
 	    sensor: function(sensor) {
 	    	if(sensor.isA("Boat")){
-	        	this.destroy();
+						this.animate({ x: this.p.x, y: this.p.y - 40}, 0.4, { callback: this.destroy});
 	        	sensor.p.sword = true;
 						Q.state.set("swordLabel", "1");
 	      	}
@@ -451,17 +451,20 @@ var game = function () {
 	      sprite:"crocodile",
 	      sheet:"crocodile",
 	      frame: 0,
-				sensor: true
+				sensor: true,
+				dead: false
 	    });
 
 	      this.add('animation, tween');
 	      this.on("sensor");
 	    },
 	    sensor: function(sensor) {
-	      if(sensor.isA("Boat")){
+	      if(sensor.isA("Boat") && !this.p.dead){
 	        if(sensor.p.sword){
+						this.p.dead = true;
+						Q.state.set("swordLabel", "0");
 	          this.destroy();
-	          //TODO Add points
+	          sensor.updateScore(50);
 	        }else{
 						this.play("attack", 1);
 	          sensor.dead();
@@ -472,6 +475,44 @@ var game = function () {
 	  step: function(dt) {
 	    this.play("float");
 	  }
+	});
+
+	/*==============================
+	=          ValueObjects        =
+	==============================*/
+
+	//GEM
+
+	Q.animations('gem', {
+	  shine: { frames: [0, 1, 2, 3], rate: 0.4 }
+	});
+
+	Q.Sprite.extend("Gem", {
+	    init: function(p) {
+	    this._super(p, {
+	      sprite:"gem",
+	          sheet:"gem",
+	          frame: 0,
+	          sensor: true,
+	          taken: false
+	      });
+
+	      this.add('animation, tween');
+	      this.on("sensor");
+	  },
+
+	    sensor: function(sensor) {
+	      if(sensor.isA("Boat") && !this.p.taken){
+	          console.log("go");
+	          this.p.taken = true;
+	          sensor.updateScore(100);
+	          this.animate({ x: this.p.x, y: this.p.y - 40}, 0.2, { callback: this.destroy});
+	        }
+	    },
+
+	    step: function(dt) {
+	      this.play("shine");
+	    }
 	});
 
 	/*==============================
@@ -558,8 +599,10 @@ var game = function () {
 		},
 
 		swordLabel: function(active) {
-			if(active) {
+			if(active == 1) {
 				this.p.opacity = 1;
+			}else {
+				this.p.opacity = 0;
 			}
 		}
 	});
@@ -676,6 +719,7 @@ var game = function () {
 						"nodes.png", "nodes.json",
 						"sword.png", "sword.json",
 						"swordLabel.png", "swordLabel.json",
+						"gem.png", "gem.json",
 						"crocodile.png", "crocodile.json",
 						"bg.png", "tiles.png"], function() {
 
@@ -684,6 +728,7 @@ var game = function () {
 		Q.compileSheets("nodes.png","nodes.json");
 		Q.compileSheets("sword.png","sword.json");
 		Q.compileSheets("swordLabel.png","swordLabel.json");
+		Q.compileSheets("gem.png","gem.json");
 		Q.compileSheets("crocodile.png","crocodile.json");
 
 		Q.loadTMX("level1.tmx, tiles.png", function() {
