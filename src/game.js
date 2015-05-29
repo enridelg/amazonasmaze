@@ -71,6 +71,7 @@ var game = function () {
 				vx: 0,
 				vy: 0,
 				sword: false,
+				score: 0,
 				enemyIsActive: false,
 				dead:false
 			});
@@ -110,6 +111,7 @@ var game = function () {
 			}
 			if(trace.length == 6) {
 				this.releaseEnemy();
+				this.updateScore(100);
 			}
 			if(!this.p.moving && !this.p.dead){
 				if(Q.inputs['up'] && map_data[this.p.actualNode].north != null){
@@ -208,7 +210,12 @@ var game = function () {
 				// TODO DESPUES UN CORRE!
 				Q.state.set("message","Te han visto! Corre!");
 			}
+		},
 
+		updateScore: function(score) {
+			this.p.score += score;
+			console.log(this.p.score);
+			Q.state.set("score", ""+this.p.score+"");
 		}
 	});
 
@@ -509,6 +516,33 @@ var game = function () {
 		}
 	});
 
+
+	/*==================================
+	=            Score                 =
+	==================================*/
+
+	Q.UI.Text.extend("Score", {
+		init: function(p) {
+			this._super({
+				label: "Score: 0",
+				color: "white",
+				x: 38,
+				y: 455,
+				size: 20
+			});
+			Q.state.on("change.score", this, "score");
+		},
+
+		score: function(score) {
+			// TODO se desajusta cuando el numero crece, se podria meter aqui un fix
+			// para la posicion del label en X Y en funcion del numero....
+			this.p.label = "Score: " + score;
+		}
+	});
+
+	/*==================================
+	=            Stats Container      =
+	==================================*/
 	Q.scene("stats", function(stage) {
 		var statsContainer = stage.insert(new Q.UI.Container({
 				x: 0,
@@ -516,6 +550,7 @@ var game = function () {
 			})
 		);
 		var messageLabel = stage.insert(new Q.Message(), statsContainer);
+		var scoreLabel = stage.insert(new Q.Score(), statsContainer);
 	});
 
 
@@ -569,6 +604,7 @@ var game = function () {
 		Q.stageTMX("level1.tmx",stage);
 		//crate elements
 		Q.state.reset({ message: " "});
+		Q.state.reset({ score: "0"});
 		Q.stageScene("stats", 1);
 		trace = new Array();
 		boat = createElements(stage);
