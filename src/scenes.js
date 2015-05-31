@@ -64,6 +64,23 @@ function loadScenes(){
 
   /*-----  End of Background   ----*/
 
+
+
+  /*==================================
+  =            Stats Container      =
+  ==================================*/
+
+  Q.scene("stats", function(stage) {
+    var statsContainer = stage.insert(new Q.UI.Container({
+        x: 0,
+        y: 0
+      })
+    );
+    var messageLabel = stage.insert(new Q.Message(), statsContainer);
+    var scoreLabel = stage.insert(new Q.Score(), statsContainer);
+    var swordLabel = stage.insert(new Q.SwordLabel(), statsContainer);
+  });
+
   /*==================================
   =             Main Menu            =
   ==================================*/
@@ -73,20 +90,64 @@ function loadScenes(){
       x: Q.width/2 , y: Q.height/2 + Q.height/10, fill: "#444444", border: 1.5
     }));
 
-    var button1 = container.insert(new Q.UI.Button({ x: 0, y: 0, fill: "#337ab7", label: "Level 1", border: 1}));
-    var button2 = container.insert(new Q.UI.Button({ x: 0, y: 60, fill: "#337ab7", label: "Level 2", border: 1 }));
-    var button3 = container.insert(new Q.UI.Button({ x: 0, y: 120, fill: "#337ab7", label: "Legend", border: 1 }));
+    var button1 = container.insert(new Q.UI.Button({ x: 0, y: 0, fill: "#337ab7", label: "Levels", border: 1}));
+    var button2 = container.insert(new Q.UI.Button({ x: 0, y: 120, fill: "#337ab7", label: "Legend", border: 1 }));
     button1.on("click",function() {
-      Q.clearStages();
-      Q.stageScene('level1');
+      Q.stageScene('levelsMenu', 2);
     });
     button2.on("click",function() {
-    });
-    button3.on("click",function() {
       Q.stageScene('legend', 2);
     });
 
     container.fit(20);
+  });
+
+  /*==================================
+  =           levels menu            =
+  ==================================*/
+
+  Q.scene("levelsMenu", function(stage) {
+    var container = stage.insert(new Q.UI.Container({
+      x: Q.width/2 , y: 50, fill: "#444444", border: 1.5
+    }));
+
+    var button1 = container.insert(new Q.UI.Button({ x: 0, y: 0, fill: "#337ab7", label: "Level 1", border: 1, scale: 0.6}));
+    var button2 = container.insert(new Q.UI.Button({ x: 0, y: 30, fill: "#337ab7", label: "Level 2", border: 1, scale: 0.6}));
+    var button3 = container.insert(new Q.UI.Button({ x: 0, y: 60, fill: "#337ab7", label: "Level 3", border: 1, scale: 0.6}));
+    var button4 = container.insert(new Q.UI.Button({ x: 0, y: 90, fill: "#337ab7", label: "Level 4", border: 1, scale: 0.6}));
+    //var text4 = container.insert(new Q.UI.Text({ x: 0, y: 300, fill: "#337ab7", label: "Legend", border: 1 }));
+    var back = container.insert(new Q.UI.Button({ x: 0, y: 380, fill: "#337ab7", label: "Back", border: 1 }));
+
+    button1.on("click",function() {
+      map_data = level1;
+      Q.clearStages();
+      Q.stageScene('level', {level:1});
+    });
+
+    button2.on("click",function() {
+      map_data = level2;
+      Q.clearStages();
+      Q.stageScene('level', {level:2});
+    });
+
+    button3.on("click",function() {
+      map_data = level3;
+      Q.clearStages();
+      Q.stageScene('level', {level:3});
+    });
+
+    button4.on("click",function() {
+      map_data = level4;
+      Q.clearStages();
+      Q.stageScene('level', {level:4});
+    });
+
+    back.on("click",function() {
+
+      Q.stageScene('mainMenu', 2);
+    });
+
+    container.fit(10, 10);
   });
 
   /*==================================
@@ -115,28 +176,11 @@ function loadScenes(){
     container.fit(10, 10);
   });
 
+
   /*==================================
-  =            Stats Container      =
+  =           init game              =
   ==================================*/
 
-  Q.scene("stats", function(stage) {
-    var statsContainer = stage.insert(new Q.UI.Container({
-        x: 0,
-        y: 0
-      })
-    );
-    var messageLabel = stage.insert(new Q.Message(), statsContainer);
-    var scoreLabel = stage.insert(new Q.Score(), statsContainer);
-    var swordLabel = stage.insert(new Q.SwordLabel(), statsContainer);
-  });
-
-
-
-  /*==============================
-  =            Scenes            =
-  ==============================*/
-
-  //initial scene
   Q.scene('initGame',function(stage) {
 
     //Q.clearStage(1);
@@ -154,11 +198,13 @@ function loadScenes(){
   });
 
   /*==============================
-  =            Level 1           =
+  =             Level            =
   ==============================*/
 
-  Q.scene("level1",function(stage) {
-    Q.stageTMX("level1.tmx",stage);
+  Q.scene("level",function(stage) {
+    a = "level"+ stage.options.level +".tmx";
+    actual_level = stage.options.level;
+    Q.stageTMX("level"+ stage.options.level +".tmx",stage);
     Q.audio.stop();
     Q.audio.play('jungle.mp3', {loop: true});
     //crate elements
@@ -192,7 +238,7 @@ function loadScenes(){
     button.on("click",function() {
       Q.audio.stop();
       Q.clearStages();
-      Q.stageScene('level1');
+      Q.stageScene('level' , {level:actual_level});
     });
     button2.on("click", function() {
       Q.audio.stop();

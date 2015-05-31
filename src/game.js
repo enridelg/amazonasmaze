@@ -6,7 +6,6 @@
 * @author Enrique Delgado Solana
 *
 **/
-
 var game = function () {
 	var Q = window.Q = Quintus()
 		.include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio")
@@ -17,6 +16,10 @@ var game = function () {
 		Q.gravityY = 0;
 		Q.gravityX = 0;
 
+	/**
+	*	Nivel actual
+	*/
+	actual_level = null;
 	/**
 	 * Rastro que deja el barco
 	 */
@@ -91,13 +94,15 @@ var game = function () {
 		},
 
 		dead: function() {
-			Q.audio.play("sinking_boat.mp3");
-			this.p.dead = true;
-			this.p.vx = 0;
-			this.p.vy = 0;
-			this.play("sink_boat", 1);
-			this.animate({ x: this.p.x, y: this.p.y}, 3, { callback: this.destroyBoat });
-			//this.destroy();
+			if(!this.p.dead){
+				this.p.dead = true;
+				this.p.vx = 0;
+				this.p.vy = 0;
+				this.play("sink_boat", 1);
+				Q.audio.play("sinking_boat.mp3");
+				this.animate({ x: this.p.x, y: this.p.y}, 3, { callback: this.destroyBoat });
+				//this.destroy();
+			}
 		},
 
 		destroyBoat: function() {
@@ -567,8 +572,22 @@ var game = function () {
 		Q.compileSheets("crocodile.png","crocodile.json");
 
 		Q.loadTMX("level1.tmx, tiles.png", function() {
-			Q.stageScene("initGame");
 		});
+
+		Q.loadTMX("level2.tmx, tiles.png", function() {
+
+		});
+		Q.loadTMX("level3.tmx, tiles.png", function() {
+
+		});
+
+		Q.loadTMX("level4.tmx, tiles.png", function() {
+
+		});
+
+		Q.stageScene("initGame");
 	});
+
+
 
 }
