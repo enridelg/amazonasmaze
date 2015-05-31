@@ -1,6 +1,50 @@
 function loadScenes(){
 
 
+  /*==================================
+  =            Message            =
+  ==================================*/
+
+  Q.UI.Text.extend("Message", {
+    init: function(p) {
+      this._super({
+        label: "Te han visto",
+        color: "white",
+        x: 150,
+        y: 50
+      });
+      Q.state.on("change.message", this, "message");
+    },
+
+    message: function(message) {
+      this.p.label = message;
+    }
+  });
+
+
+  /*==================================
+  =            Score                 =
+  ==================================*/
+
+  Q.UI.Text.extend("Score", {
+    init: function(p) {
+      this._super({
+        label: "Score: 0",
+        color: "white",
+        x: 80,
+        y: 455,
+        size: 20
+      });
+      Q.state.on("change.score", this, "score");
+    },
+
+    score: function(score) {
+      // TODO se desajusta cuando el numero crece, se podria meter aqui un fix
+      // para la posicion del label en X Y en funcion del numero....
+      this.p.label = "Score: " + score;
+    }
+  });
+
   /*==============================
   =          Background          =
   ==============================*/
@@ -92,29 +136,7 @@ function loadScenes(){
   =            Scenes            =
   ==============================*/
 
-/*
-
-  Q.scene('hud',function(stage) {
-    var container = stage.insert(new Q.UI.Container({
-      x: 50, y: 0
-    }));
-
-    var label = container.insert(new Q.UI.Text({x:100, y: 20,
-      label: "Coins: " + Q.state.get("coins"), color: "Black" }));
-
-    container.fit(20);
-
-
-    //Cuando hay un cambio de valor limpiamos la escena 1 y la volvemos a introducir
-    Q.state.on("change.coins", function() {
-      Q.clearStage(1);
-      Q.stageScene('hud', 1);
-    })
-  });
-
-*/
-
-//initial scene
+  //initial scene
   Q.scene('initGame',function(stage) {
 
     //Q.clearStage(1);
@@ -150,28 +172,26 @@ function loadScenes(){
       x: Q.width/2, y: Q.height/2, fill: "rgba(0,0,0,0)"
     }));
 */
-    //var label = stage.insert(new Q.UI.Text({x: Q.width/2, y: Q.height/2, label: "Coins: " }));
-
-     //stage.add("viewport").follow(mario);//.follow(Q("Player").first());
-
-     //stage.viewport.offsetX = -100;
-     //stage.viewport.offsetY = 180;
-     //stage.add("viewport").centerOn(150, 380);
   });
 
 
 //End game scene
   Q.scene('endGame',function(stage) {
     var container = stage.insert(new Q.UI.Container({
-      x: Q.width/2, y: Q.height/2, fill: "rgba(0,0,0,0.5)"
+      x: Q.width/2 , y: Q.height/2, fill: "#444444", border: 1.5
     }));
 
-    var button = container.insert(new Q.UI.Button({ x: 0, y: 0, fill: "#CCCCCC", label: "Play Again" }))
-    var label = container.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, label: stage.options.label }));
+    var button = container.insert(new Q.UI.Button({ x: 0, y: 0, fill: "#CCCCCC", label: "Play again this level", scale:0.7, fill: "#337ab7", border: 1 }));
+    var button2 = container.insert(new Q.UI.Button({ x: 0, y: 40, fill: "#CCCCCC", label: "Back to menu", scale:0.7 , fill: "#337ab7", border: 1 }))
+    var label = container.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, label: stage.options.label, color: "white" }));
     button.on("click",function() {
       Q.clearStages();
-      Q.stageScene('initGame');
+      Q.stageScene('level1');
     });
+    button2.on("click", function() {
+      Q.clearStages();
+      Q.stageScene('initGame');
+    })
 
     container.fit(20);
   });
