@@ -20,7 +20,7 @@ var game = function () {
 	/**
 	 * Rastro que deja el barco
 	 */
-	var trace = new Array();
+	trace = new Array();
 
 	/**
 	 * Busca si hemos pasado ya por un nodo, si lo encuentra
@@ -91,6 +91,7 @@ var game = function () {
 		},
 
 		dead: function() {
+			Q.audio.play("sinking_boat.mp3");
 			this.p.dead = true;
 			this.p.vx = 0;
 			this.p.vy = 0;
@@ -107,9 +108,9 @@ var game = function () {
 		step: function(dt) {
 			// Mover esto de sitio, de momento es comodo.
 			if(trace.length == 0) {
-				Q.state.set("message","");
+				Q.state.set("message"," ");
 			}
-			if(trace.length == 6) {
+			if(trace.length == 6 && !this.p.enemyIsActive) {
 				this.releaseEnemy();
 			}
 			if(!this.p.moving && !this.p.dead){
@@ -204,16 +205,12 @@ var game = function () {
 		},
 
 		releaseEnemy: function() {
-			if(!this.p.enemyIsActive) {
-				// TODO ESTARIA GUAY PONER UN TE HAN VISTO 1sec
-				// TODO DESPUES UN CORRE!
-				Q.state.set("message","Te han visto! Corre!");
-			}
+			Q.audio.play("detected.mp3")
+			Q.state.set("message","Te han visto! Corre!");
 		},
 
 		updateScore: function(score) {
 			this.p.score += score;
-			console.log(this.p.score);
 			Q.state.set("score", ""+this.p.score+"");
 		}
 	});
@@ -252,7 +249,7 @@ var game = function () {
 	},
 	hit: function(collision) {
 		if(collision.obj.isA("Boat")){
-			this.stop = true;
+			this.p.stop = true;
 			this.p.vx = 0;
 			this.p.vy = 0;
 			this.play("stand_right");
@@ -262,6 +259,9 @@ var game = function () {
 
 	step: function(dt) {
 		if(trace.length == 6) {
+			this.p.x = map_data[trace[0][0]].x;
+			this.p.y = map_data[trace[0][0]].y;
+			this.p.opacity = 1;
 			this.p.actualNode = trace[0][0];
 		}
 		else if(trace.length > 6) {
@@ -277,28 +277,31 @@ var game = function () {
 
 				if(!(trace[idx] === undefined)) {
 					if(trace[idx][1] == "north") {
+						this.p.moving = true;
 						this.p.actualNode = map_data[this.p.actualNode].north;
 						this.p.vy = -this.p.speed;
 						this.play("move_top");
 					}
 					else if(trace[idx][1] == "south") {
+						this.p.moving = true;
 						this.p.actualNode = map_data[this.p.actualNode].south;
 						this.p.vy = this.p.speed;
 						this.play("move_bottom");
 					}
 					else if(trace[idx][1] == "west") {
+						this.p.moving = true;
 						this.p.actualNode = map_data[this.p.actualNode].west;
 						this.p.vx = -this.p.speed;
 						this.play("move_left");
 					}
 					else if(trace[idx][1] == "east") {
+						this.p.moving = true;
 						this.p.actualNode = map_data[this.p.actualNode].east;
 						this.p.vx = this.p.speed;
 						this.play("move_right");
 					}
-					this.p.moving = true;
 				}
-			} else {
+			} else if(!this.p.stop){
 				if(this.p.vx > 0 || this.p.vy > 0) {
 					if(this.p.x + dt * this.p.vx > map_data[this.p.actualNode].x ||
 						this.p.y + dt * this.p.vy > map_data[this.p.actualNode].y) {
@@ -308,7 +311,7 @@ var game = function () {
 								this.p.x = map_data[this.p.actualNode].x;
 								this.play("stand_right");
 							}
-							else {							//botom
+							else {							//bottom
 								this.p.vy = 0;
 								this.p.y = map_data[this.p.actualNode].y;
 								this.play("stand_bottom");
@@ -460,6 +463,7 @@ var game = function () {
 	    sensor: function(sensor) {
 	      if(sensor.isA("Boat") && !this.p.dead){
 	        if(sensor.p.sword){
+						sensor.p.sword = false;
 						this.p.dead = true;
 						Q.state.set("swordLabel", "0");
 	          this.destroy();
@@ -514,52 +518,6 @@ var game = function () {
 	});
 
 
-
-	/*==================================
-	=            Message            =
-	==================================*/
-
-	Q.UI.Text.extend("Message", {
-		init: function(p) {
-			this._super({
-				label: "Te han visto",
-				color: "white",
-				x: 150,
-				y: 50
-			});
-			Q.state.on("change.message", this, "message");
-		},
-
-		message: function(message) {
-			this.p.label = message;
-		}
-	});
-
-
-	/*==================================
-	=            Score                 =
-	==================================*/
-
-	Q.UI.Text.extend("Score", {
-		init: function(p) {
-			this._super({
-				label: "Score: 0",
-				color: "white",
-				x: 38,
-				y: 455,
-				size: 20
-			});
-			Q.state.on("change.score", this, "score");
-		},
-
-		score: function(score) {
-			// TODO se desajusta cuando el numero crece, se podria meter aqui un fix
-			// para la posicion del label en X Y en funcion del numero....
-			this.p.label = "Score: " + score;
-		}
-	});
-
-
 	/*==================================
 	=            Sword                 =
 	==================================*/
@@ -597,7 +555,8 @@ var game = function () {
 						"gem.png", "gem.json",
 						"crocodile.png", "crocodile.json",
 						"bg.png", "tiles.png",
-						"endNode.png", "enemyNode.png", "objectNode.png"], function() {
+						"endNode.png", "enemyNode.png", "objectNode.png",
+						 "jungle.mp3", "sinking_boat.mp3", "detected.mp3", "intro.mp3"], function() {
 
 		Q.compileSheets("boat.png","boat.json");
 		Q.compileSheets("boat_enemy.png","eBoat.json");
@@ -612,4 +571,4 @@ var game = function () {
 		});
 	});
 
-};
+}

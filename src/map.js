@@ -11,10 +11,11 @@ function createElements(stage) {
       stage.insert(new Q.Node({x:map_data[node].x, y:map_data[node].y, sheet:"nodeB"}));
     }else if(node_type == "1"){
       //boat = stage.insert(new Q.Boat({x:map_data[node].x, y:map_data[node].y, actualNode:node}));
+      stage.insert(new Q.Node({x:map_data[node].x, y:map_data[node].y, sheet:"nodeB"}));
       boat = new Q.Boat({x:map_data[node].x, y:map_data[node].y, actualNode:node});
     }else if(node_type == "2"){
       //barco enemigo
-      enemy_boat = new Q.EBoat({x:map_data[node].x, y:map_data[node].y, actualNode:node});
+      stage.insert(new Q.Node({x:map_data[node].x, y:map_data[node].y, sheet:"nodeB"}));
     }else if(node_type == "3"){
       stage.insert(new Q.Node({x:map_data[node].x, y:map_data[node].y, sheet:"nodeR"}));
       stage.insert(new Q.Crocodile({x:map_data[node].x, y:map_data[node].y}));
@@ -26,6 +27,7 @@ function createElements(stage) {
       stage.insert(new Q.Gem({x:map_data[node].x, y:map_data[node].y}));
     }
   }
-  stage.insert(enemy_boat);
+
+  stage.insert(new Q.EBoat({x:-32, y:0, opacity: 0})); // Enemy boat opacity 0 and outside of the map
   return boat;
 }

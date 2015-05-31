@@ -142,7 +142,8 @@ function loadScenes(){
     //Q.clearStage(1);
     var bg = new Q.Background({ type: Q.SPRITE_UI });
     stage.insert(bg);
-    //Q.audio.stop(); //Stop all the music
+    Q.audio.stop(); //Stop all the music
+    Q.audio.play('intro.mp3', {loop: true});
 
     Q.input.on("confirm",function() {
       if(Q.stage().scene.name == "initGame")
@@ -152,10 +153,14 @@ function loadScenes(){
 
   });
 
+  /*==============================
+  =            Level 1           =
+  ==============================*/
 
-//level1
   Q.scene("level1",function(stage) {
     Q.stageTMX("level1.tmx",stage);
+    Q.audio.stop();
+    Q.audio.play('jungle.mp3', {loop: true});
     //crate elements
     Q.state.reset({ message: " "});
     Q.state.reset({ score: "0"});
@@ -185,10 +190,12 @@ function loadScenes(){
     var button2 = container.insert(new Q.UI.Button({ x: 0, y: 40, fill: "#CCCCCC", label: "Back to menu", scale:0.7 , fill: "#337ab7", border: 1 }))
     var label = container.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, label: stage.options.label, color: "white" }));
     button.on("click",function() {
+      Q.audio.stop();
       Q.clearStages();
       Q.stageScene('level1');
     });
     button2.on("click", function() {
+      Q.audio.stop();
       Q.clearStages();
       Q.stageScene('initGame');
     })
